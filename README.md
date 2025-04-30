@@ -20,11 +20,10 @@ This project follows the **Clean Architecture** approach to separate concerns be
 - MongoDB + Mongoose
 - JWT for authentication
 - Nodemailer for email sending
-- Mailtrap for testing emails
 - Custom middlewares and validators
 
 📬 Email Features:
-Emails are sent via Nodemailer and tested with Mailtrap. The system supports welcome emails, email verification, and password reset links.
+Emails are sent via Nodemailer. The system supports welcome emails, email verification, and password reset links.
 
 📌 How to Use:
 1. Clone the repo
