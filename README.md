@@ -31,5 +31,10 @@ Emails are sent via Nodemailer. The system supports welcome emails, email verifi
 3. Run `npm install`
 4. Run the server with `npm run dev`
 
+## Postman Collection
+You can test the full authentication API using Postman.  
+👉 [Download the Postman Collection](https://drive.google.com/file/d/1C8LYdzKpw3mJv5tj0GNh9H4Kq8zR-vv6/view?usp=drive_link)
+
+
 🤝 Contributions and feedback are welcome!
 
