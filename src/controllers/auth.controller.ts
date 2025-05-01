@@ -2,7 +2,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { ResponseHandling } from "../utils/handleRespose";
-import { date } from 'joi';
 
 
 export class AuthController {
@@ -14,14 +13,17 @@ export class AuthController {
     this.login = this.login.bind(this);
     this.forgotPassword = this.forgotPassword.bind(this);
     this.verifiyEmail = this.verifiyEmail.bind(this);
-    this.resetPassword = this.resetPassword.bind(this);
+    this.changePassword = this.changePassword.bind(this);
   }
 
   async signup(req: Request, res: Response): Promise<void> {
     try {
       const userData = req.body;
       const newUser = await this.authService.signup(userData);
-      ResponseHandling.handleResponse({ res: res, statusCode: 200, body: { userId: newUser._id, email: newUser.email } });
+      ResponseHandling.handleResponse({
+        res: res, statusCode: 200,
+        message: "The account has been created successfully",
+      });
 
     } catch (error: any) {
       console.log("Error in signup", error);
@@ -68,7 +70,7 @@ export class AuthController {
   async verifiyEmail(req: Request, res: Response) {
     try {
       const { code, email } = req.body;
-      const user = await this.authService.verifiyEmail(code, email);
+      const { user, token } = await this.authService.verifiyEmail(code, email);
 
       if (!user) {
         ResponseHandling.handleResponse({
@@ -76,35 +78,43 @@ export class AuthController {
           statusCode: 400
         });
       }
-
-      else {
-
+      if (!token) {
         ResponseHandling.handleResponse({
           res: res, message: "Email verifiy successfully", statusCode: 200,
-          body: { "_id": user._id, "name": user.name, "email": user.email, "mobile": user.mobile, }
+          body: {
+            userInfo: { "_id": user._id, "name": user.name, "email": user.email, "mobile": user.mobile, },
+          },
+        });
+      }
+      else {
+        ResponseHandling.handleResponse({
+          res: res, message: "Email verifiy successfully", statusCode: 200,
+          body: {
+            userInfo: { "_id": user._id, "name": user.name, "email": user.email, "mobile": user.mobile, },
+            token: token
+          },
         });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error in Verifiy Email");
-      ResponseHandling.handleResponse({ res: res, statusCode: 500 });
+      ResponseHandling.handleResponse({ res: res, statusCode: 400, message: error.message });
     }
   }
 
 
-  async resetPassword(req: Request, res: Response) {
+  async changePassword(req: Request, res: Response) {
     try {
-      const { password, email } = req.body;
+      const token = req.header('Authorization')?.replace('Bearer ', '');
+      console.log(token);
+      const { password } = req.body;
 
-      const user = await this.authService.resetPassword(password, email);
-      if (!user) {
-        throw new Error("Error not found");
-      }
+      await this.authService.changePassword(password, token!);
       ResponseHandling.handleResponse({ res: res, statusCode: 200, message: "Password reset successful" });
 
-    } catch (error) {
-      console.log("Error in Verifiy Email");
-      ResponseHandling.handleResponse({ res: res, statusCode: 500 });
+    } catch (error: any) {
+      console.log("Error in change password");
+      ResponseHandling.handleResponse({ res: res, statusCode: 500, message: error.message });
     }
   }
 

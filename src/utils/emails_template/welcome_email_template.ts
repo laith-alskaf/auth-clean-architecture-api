@@ -70,7 +70,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
             <h2>Welcome to [Your App Name]! 🎉</h2>
         </div>
         
-        <p class="welcome-text">Dear {{USER_NAME}},</p>
+        <p class="welcome-text">Dear {USER_NAME},</p>
         
         <p>Thank you for joining [Your App Name]! We're thrilled to have you on board.</p>
         

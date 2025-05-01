@@ -7,16 +7,16 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         const token = req.header('Authorization')?.replace('Bearer ', '');
 
         if (!token) {
-            res.status(401).json({ message: 'Authentication required' });
+            throw new Error("Authentication required");
         }
-        const decoded: any = jwt.verify(token!, process.env.JWT_SECRET || 'your-secret-key'); // Replace with your actual secret
-        const user = await UserModel.findById(decoded.userId);
+        const decoded: any = jwt.verify(token!, process.env.JWT_SECRET || 'y#^o%ur!-@se^&cr!~%^et-ke$&y'); // Replace with your actual secret
+        const user = await UserModel.findById(decoded.id);
         if (!user) {
-            throw new Error();
+            throw new Error("User not foun");
         }
 
         next();
-    } catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
+    } catch (error: any) {
+        res.status(401).json({ message: error.message ?? 'Invalid token' });
     }
 };
