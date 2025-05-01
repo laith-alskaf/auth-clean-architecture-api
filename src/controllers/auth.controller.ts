@@ -69,8 +69,8 @@ export class AuthController {
 
   async verifiyEmail(req: Request, res: Response) {
     try {
-      const { code, email } = req.body;
-      const { user, token } = await this.authService.verifiyEmail(code, email);
+      const { code } = req.body;
+      const user = await this.authService.verifiyEmail(code);
 
       if (!user) {
         ResponseHandling.handleResponse({
@@ -78,23 +78,14 @@ export class AuthController {
           statusCode: 400
         });
       }
-      if (!token) {
-        ResponseHandling.handleResponse({
-          res: res, message: "Email verifiy successfully", statusCode: 200,
-          body: {
-            userInfo: { "_id": user._id, "name": user.name, "email": user.email, "mobile": user.mobile, },
-          },
-        });
-      }
-      else {
-        ResponseHandling.handleResponse({
-          res: res, message: "Email verifiy successfully", statusCode: 200,
-          body: {
-            userInfo: { "_id": user._id, "name": user.name, "email": user.email, "mobile": user.mobile, },
-            token: token
-          },
-        });
-      }
+      ResponseHandling.handleResponse({
+        res: res, message: "Email verifiy successfully", statusCode: 200,
+        body: {
+          userInfo: { "_id": user._id, "name": user.name, "email": user.email, "mobile": user.mobile, },
+        },
+      });
+
+
 
     } catch (error: any) {
       console.log("Error in Verifiy Email");
@@ -105,12 +96,9 @@ export class AuthController {
 
   async changePassword(req: Request, res: Response) {
     try {
-      const token = req.header('Authorization')?.replace('Bearer ', '');
-      console.log(token);
-      const { password } = req.body;
-
-      await this.authService.changePassword(password, token!);
-      ResponseHandling.handleResponse({ res: res, statusCode: 200, message: "Password reset successful" });
+      const { newPassword, code } = req.body;
+      await this.authService.changePassword(newPassword, code);
+      ResponseHandling.handleResponse({ res: res, statusCode: 200, message: "Password chnaged successful" });
 
     } catch (error: any) {
       console.log("Error in change password");

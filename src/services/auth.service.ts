@@ -65,45 +65,33 @@ export class AuthService {
 
   }
 
-  async verifiyEmail(code: string, email: string): Promise<{ user: IUser, token: string | null }> {
-    const user = await this.userRepository.getUserByEmail(email);
+  async verifiyEmail(code: string): Promise<IUser> {
+    const user = await this.userRepository.getUserByCode(code);
     if (!user) throw new Error("Invalid code");
 
     if (user.otpCode !== code || user.otpCodeExpires < new Date()) {
       throw new Error("Expired verification code");
     }
-    var token: string | null = null;
-    if (user.isEmailVerified) {
-      const payload = { id: user.id, email: user.email, isChangePass: true };
-      token = jwt.sign(payload, this.jwtSecret, {
-        expiresIn: '10m'
-      });
-    }
-    else {
-      user.isEmailVerified = true;
-      await sendWelcomeEmail(user.email, user.name);
-    }
     user.otpCodeExpires = new Date("00");
     user.otpCode = '';
+    user.isEmailVerified = true;
     user.save();
 
-    return { user, token };
+    await sendWelcomeEmail(user.email, user.name);
+
+    return user;
 
   }
 
-  async changePassword(password: string, token: string): Promise<IUser> {
-    const decoded = jwt.verify(token, this.jwtSecret);
-    if ((decoded as any).isChangePass != true) {
-      throw new Error('Please verify email, then reset password');
-    }
-    const userId = (decoded as any).id;
-    const user = await this.userRepository.getUserById(userId);
+  async changePassword(password: string, code: string): Promise<IUser> {
+    const user = await this.userRepository.getUserByCode(code);
     if (!user) {
       throw new Error('User not found');
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
-
+    user.otpCodeExpires = new Date("00");
+    user.otpCode = '';
     await user.save();
     await sendResetSuccessEmail(user.email);
 

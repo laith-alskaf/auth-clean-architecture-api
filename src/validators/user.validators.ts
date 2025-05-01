@@ -21,8 +21,12 @@ const ForgotPasswordSchema = Joi.object({
 
  const verifyEmailSchema  = Joi.object({
   code: Joi.string().required(),
-  email: Joi.string().email().required(),
 });
+const changePasswordSchema  = Joi.object({
+  code: Joi.string().required(),
+  newPassword:Joi.string().required()
+});
+
 
 export const validateSignup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -69,13 +73,23 @@ export const validateForgotPass = async (req: Request, res: Response, next: Next
 
 }
 
-export const validationResetPassword = Joi.object({
-  password: Joi.string().min(6).required(),
-});
-
 export const  validateVerifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { error } = verifyEmailSchema.validate(req.body);
+    if (error) {
+        res.status(400).json({ message: error.details[0].message });
+    }
+    next();
+  } catch (error) {
+    console.log("Error in validateVerifyEmail", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+
+}
+
+export const  validateChangePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { error } = changePasswordSchema.validate(req.body);
     if (error) {
         res.status(400).json({ message: error.details[0].message });
     }

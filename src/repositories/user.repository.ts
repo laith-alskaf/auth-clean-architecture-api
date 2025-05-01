@@ -17,4 +17,9 @@ export class UserRepository {
     return await UserModel.findById(userId);
   }
 
+  async getUserByCode(code: string): Promise<IUser | null> {
+    return await UserModel.findOne({ otpCode: code });
+  }
+
+
 }
