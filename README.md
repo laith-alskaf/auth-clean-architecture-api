@@ -20,17 +20,21 @@ This project follows the **Clean Architecture** approach to separate concerns be
 - MongoDB + Mongoose
 - JWT for authentication
 - Nodemailer for email sending
-- Mailtrap for testing emails
 - Custom middlewares and validators
 
 📬 Email Features:
-Emails are sent via Nodemailer and tested with Mailtrap. The system supports welcome emails, email verification, and password reset links.
+Emails are sent via Nodemailer. The system supports welcome emails, email verification, and password reset links.
 
 📌 How to Use:
 1. Clone the repo
 2. Set up your `.env` file (see `.env.example`)
 3. Run `npm install`
 4. Run the server with `npm run dev`
+
+## Postman Collection
+You can test the full authentication API using Postman.  
+👉 [Download the Postman Collection](https://drive.google.com/file/d/1C8LYdzKpw3mJv5tj0GNh9H4Kq8zR-vv6/view?usp=drive_link)
+
 
 🤝 Contributions and feedback are welcome!
 
